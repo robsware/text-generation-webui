@@ -141,19 +141,31 @@ def create_interface():
         extensions_module.create_extensions_block()  # Extensions block
 
     # Launch the interface
-    shared.gradio['interface'].queue(concurrency_count=64)
-    with OpenMonkeyPatch():
-        shared.gradio['interface'].launch(
-            prevent_thread_lock=True,
-            share=shared.args.share,
-            server_name=None if not shared.args.listen else (shared.args.listen_host or '0.0.0.0'),
-            server_port=shared.args.listen_port,
-            inbrowser=shared.args.auto_launch,
-            auth=auth or None,
-            ssl_verify=False if (shared.args.ssl_keyfile or shared.args.ssl_certfile) else True,
-            ssl_keyfile=shared.args.ssl_keyfile,
-            ssl_certfile=shared.args.ssl_certfile
-        )
+    # Launch the interface
+
+    # Define the file path where you want to save the output
+    output_file = "output.txt"
+
+    # Create a file object to write the output to the file
+    with open(output_file, "w") as f:
+        # Redirect stdout to the file
+        sys.stdout = f
+
+        # Run your code that produces the output
+        shared.gradio['interface'].queue(concurrency_count=64)
+        with OpenMonkeyPatch():
+            shared.gradio['interface'].launch(
+                prevent_thread_lock=True,
+                share=shared.args.share,
+                server_name=None if not shared.args.listen else (shared.args.listen_host or '0.0.0.0'),
+                server_port=shared.args.listen_port,
+                inbrowser=shared.args.auto_launch,
+                auth=auth or None,
+                ssl_verify=False if (shared.args.ssl_keyfile or shared.args.ssl_certfile) else True,
+                ssl_keyfile=shared.args.ssl_keyfile,
+                ssl_certfile=shared.args.ssl_certfile
+            )
+
 
 
 if __name__ == "__main__":
